@@ -2,18 +2,20 @@
 # Another pass at cleaning 2 datasets from 2014 and 2015 only
 # and create a single dataset to be used for further analysis
 
-rev14 <- read.csv("revenue2014.csv", stringsAsFactors = FALSE, na.strings = " ")
-rev15 <- read.csv("revenue2015.csv", stringsAsFactors = FALSE, na.strings = " ")
+rev14 <- read.csv("revenue2014.csv", stringsAsFactors = FALSE,
+                  na.strings = " ")
 
 # 2014 data
 str(rev14)
 rev14 <- rev14[, -c(7:8)]
-colnames(rev14) <- c("date", "payer", "purpose", "amount", "pay.mode", "remark")
+colnames(rev14) <- c("date", "payer", "purpose",
+                     "amount", "pay.mode", "remark")
 rev14 <- rev14[-1, ]
 rev14$date <- as.Date(rev14$date, format = "%m/%d/%Y")
 
 rev14$purpose
-rev14$purpose[rev14$purpose == "CONSULTANT WORKSHOP"] <- "Consultant Workshop"
+rev14$purpose[rev14$purpose == "CONSULTANT WORKSHOP"] <-
+  "Consultant Workshop"
 rev14$purpose[grep("CONSULTANT", rev14$purpose)] <- "Consultant Fee"
 rev14$purpose[grep("GUIDELINE", rev14$purpose)] <- "EPR Guideline"
 rev14$purpose[grep("REGULATIONS", rev14$purpose)] <- "Regulations"
@@ -130,3 +132,8 @@ str(rev14)
 # done cleaning 2014 data... now save
 saveRDS(rev14, "Revenue2014_cleaned.rds")
 dir()
+rm(rev14)
+
+# 2015 data
+rev15 <- read.csv("revenue2015.csv", stringsAsFactors = FALSE,
+                  na.strings = " ")
