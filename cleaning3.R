@@ -137,3 +137,94 @@ rm(rev14)
 # 2015 data
 rev15 <- read.csv("revenue2015.csv", stringsAsFactors = FALSE,
                   na.strings = " ")
+
+str(rev15)
+dim(rev15)
+colnames(rev15)[1:10]
+head(rev15$X.1)
+head(rev15$X.1, n = 100)
+rev15 <- rev15[, 1:7]
+str(rev15)
+rev15 <- rev15[, -1]
+str(rev15)
+
+colnames(rev15) <- c("date", "payer", "purpose",
+                     "amount", "pay.mode", "remark")
+
+rev15$date <- as.Date(rev15$date, format = "%m/%d/%Y")
+
+levels(as.factor(rev15$purpose))
+rev15$purpose[grep("^W|^PERMIT", rev15$purpose)] <- "AQMT Permit"
+rev15$purpose[grep("^REN|^ENV|^CONSULTANT REG", rev15$purpose)] <-
+  "Consultant Fee"
+rev15$purpose[grep("REG", rev15$purpose)] <- "Regulations"
+rev15$purpose[grep("UEEE", rev15$purpose)] <- "UEEE"
+rev15$purpose[grep("AIR", rev15$purpose)] <- "AQMT Permit"
+rev15$purpose[grep("AUDIT", rev15$purpose)] <- "Audit Cert."
+rev15$purpose[grep("^NON|^PEN", rev15$purpose)] <- "Non-compliance"
+rev15$purpose[grep("^EMP", rev15$purpose)] <- "EMP"
+rev15$purpose[grep("NVECP", rev15$purpose)]  <- "Miscellaneous"
+rev15$purpose[grep("^ACC|WORK", rev15$purpose)] <- "Consultant Fee"
+
+rev15[rev15$purpose == "FEES", ]
+rev15$purpose[rev15$purpose == "FEES"] <- "AQMT Permit"
+
+rev15$purpose[grep("PERMIT", rev15$purpose)] <- "AQMT Permit"
+rev15$purpose[grep("^ID", rev15$purpose)] <- "Miscellaneous"
+rev15$purpose[grep("^OA|^SE|^TR|^VE", rev15$purpose)] <- "Miscellaneous"
+rev15$purpose[grep("^SALE", rev15$purpose)] <- "EPR Guideline"
+rev15$purpose[grep("^RE", rev15$purpose)] <- "Regulations"
+
+rev15[rev15$purpose == "PROCESSING FEE", ]
+rev15$purpose[rev15$purpose == "PROCESSING FEE"] <- "UEEE"
+
+rev15$purpose[rev15$purpose == "" | rev15$purpose == "TELLER"] <- NA
+
+rev15$purpose <- as.factor(rev15$purpose)
+str(rev15)
+
+head(rev15$amount)
+rev15$amount <- gsub(",+", replacement = "", rev15$amount)
+head(rev15$amount); tail(rev15$amount)
+rev15$amount <- gsub(".00$", replacement = "", rev15$amount)
+head(rev15$amount); tail(rev15$amount)
+rev15$amount <- stringr::str_trim(rev15$amount)
+rev15$amount <- as.numeric(rev15$amount)
+str(rev15)
+
+levels(as.factor(rev15$pay.mode))
+rev15$pay.mode[grep("\\bDR", rev15$pay.mode)] <- "Bank Draft"
+rev15$pay.mode[grep("\\bTE", rev15$pay.mode)] <- "Bank Teller"
+rev15$pay.mode[grep("[[:digit:]]", rev15$pay.mode)] <- "TSA"
+rev15$pay.mode[rev15$pay.mode == "" | rev15$pay.mode == "EMP"] <- NA
+
+rev15$pay.mode <- as.factor(rev15$pay.mode)
+str(rev15)
+
+levels(as.factor(rev15$remark))
+rev15$remark[-grep("NORTH|SOUTH|HQ", rev15$remark)] <-
+  stringr::str_to_title(rev15$remark[-grep("NORTH|SOUTH|HQ", rev15$remark)])
+levels(as.factor(rev15$remark))
+
+rev15$remark[grep("^C", rev15$remark)] <- "Cross River"
+rev15$remark[rev15$remark == "Jos"] <- "Plateau"
+rev15$remark[grep("^KAN|THW", rev15$remark)] <- "NORTH WEST"
+
+rev15$remark <- stringr::str_trim(rev15$remark)
+levels(as.factor(rev15$remark))
+
+rev15$remark[rev15$remark == "Nass"] <- "Nassarawa"
+rev15$remark[grep("^Ph", rev15$remark)] <- "Rivers"
+levels(as.factor(rev15$remark))
+
+rev15$remark[rev15$remark == "" | rev15$remark == "Ear"] <- NA
+levels(as.factor(rev15$remark))
+
+rev15$remark <- as.factor(rev15$remark)
+str(rev15)
+
+# cleaning done... save dataset
+saveRDS(rev15, "Revenue2015_cleaned.rds")
+dir()
+rm(rev15)
+# END
