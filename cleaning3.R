@@ -2,6 +2,9 @@
 # Another pass at cleaning 2 datasets from 2014 and 2015 only
 # and create a single dataset to be used for further analysis
 
+library(stringr)
+library(lubridate)
+
 rev14 <- read.csv("revenue2014.csv", stringsAsFactors = FALSE,
                   na.strings = " ")
 
@@ -11,7 +14,23 @@ rev14 <- rev14[, -c(7:8)]
 colnames(rev14) <- c("date", "payer", "purpose",
                      "amount", "pay.mode", "remark")
 rev14 <- rev14[-1, ]
+str(rev14)
+
+rev14$date <- str_trim(rev14$date)
+rev14$date
+
+rev14$date <- gsub("^([0-9]?)/", "0\\1/", rev14$date) 
+rev14$date <- gsub("/([0-9]?)/", "/0\\1/", rev14$date)
+head(rev14$date, 100)
+rev14$date <- gsub("/14$|/2015|/2016|/2017|/2018", "/2014", rev14$date)
+rev14$date
+
+needReformat <- is.na(as.Date(rev14$date, format = "%m/%d/%Y"))
+rev14$date[needReformat]
+rev14$date[needReformat] <- 
+  gsub("^([0-9]{2})/([0-9]{2})", "\\2/\\1", rev14$date[needReformat])
 rev14$date <- as.Date(rev14$date, format = "%m/%d/%Y")
+rev14$date
 
 rev14$purpose
 rev14$purpose[rev14$purpose == "CONSULTANT WORKSHOP"] <-
@@ -79,7 +98,7 @@ rev14$purpose <- as.factor(rev14$purpose)
 str(rev14)
 
 head(rev14$amount)
-rev14$amount <- stringr::str_trim(rev14$amount)
+rev14$amount <- str_trim(rev14$amount)
 rev14$amount <- gsub(pattern = ",+", replacement = "", rev14$amount)
 rev14$amount <- gsub(".00$", replacement = "", rev14$amount)
 rev14$amount <- round(as.numeric(rev14$amount))
@@ -132,7 +151,7 @@ str(rev14)
 # done cleaning 2014 data... now save
 saveRDS(rev14, "Revenue2014_cleaned.rds")
 dir()
-rm(rev14)
+rm(list = ls())
 
 # 2015 data
 rev15 <- read.csv("revenue2015.csv", stringsAsFactors = FALSE,
@@ -151,7 +170,13 @@ str(rev15)
 colnames(rev15) <- c("date", "payer", "purpose",
                      "amount", "pay.mode", "remark")
 
+rev15$date
+rev15$date <- gsub("^([0-9]?)/", "0\\1/", rev15$date)
+needReformat <- is.na(as.Date(rev15$date, format = "%m/%d/%Y"))
+rev15$date[needReformat] <- 
+  gsub("^([0-9]{2})/([0-9]{2})", "\\2/\\1", rev15$date[needReformat])
 rev15$date <- as.Date(rev15$date, format = "%m/%d/%Y")
+rev15$date
 
 levels(as.factor(rev15$purpose))
 rev15$purpose[grep("^W|^PERMIT", rev15$purpose)] <- "AQMT Permit"
@@ -188,7 +213,7 @@ rev15$amount <- gsub(",+", replacement = "", rev15$amount)
 head(rev15$amount); tail(rev15$amount)
 rev15$amount <- gsub(".00$", replacement = "", rev15$amount)
 head(rev15$amount); tail(rev15$amount)
-rev15$amount <- stringr::str_trim(rev15$amount)
+rev15$amount <- str_trim(rev15$amount)
 rev15$amount <- as.numeric(rev15$amount)
 str(rev15)
 
@@ -203,14 +228,14 @@ str(rev15)
 
 levels(as.factor(rev15$remark))
 rev15$remark[-grep("NORTH|SOUTH|HQ", rev15$remark)] <-
-  stringr::str_to_title(rev15$remark[-grep("NORTH|SOUTH|HQ", rev15$remark)])
+  str_to_title(rev15$remark[-grep("NORTH|SOUTH|HQ", rev15$remark)])
 levels(as.factor(rev15$remark))
 
 rev15$remark[grep("^C", rev15$remark)] <- "Cross River"
 rev15$remark[rev15$remark == "Jos"] <- "Plateau"
 rev15$remark[grep("^KAN|THW", rev15$remark)] <- "NORTH WEST"
 
-rev15$remark <- stringr::str_trim(rev15$remark)
+rev15$remark <- str_trim(rev15$remark)
 levels(as.factor(rev15$remark))
 
 rev15$remark[rev15$remark == "Nass"] <- "Nassarawa"
@@ -226,5 +251,5 @@ str(rev15)
 # cleaning done... save dataset
 saveRDS(rev15, "Revenue2015_cleaned.rds")
 dir()
-rm(rev15)
+rm(list = ls())
 # END
