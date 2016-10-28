@@ -16,21 +16,27 @@ colnames(rev14) <- c("date", "payer", "purpose",
 rev14 <- rev14[-1, ]
 str(rev14)
 
+# ----------
+# CLEANING THE "DATE" FIELD IN THIS DATASET:
+# Expand all single digit fields into double digits. 
+# Then switch fields were the month-day field arrangement didn't fit 
+# the formatting.
+# Year entries that were wrong entries or use of 2-digits fixed.
 rev14$date <- str_trim(rev14$date)
 rev14$date
-
-rev14$date <- gsub("^([0-9]?)/", "0\\1/", rev14$date) 
-rev14$date <- gsub("/([0-9]?)/", "/0\\1/", rev14$date)
+rev14$date <- gsub("^([0-9]?)/", "0\\1/", rev14$date) # single to double digit
+rev14$date <- gsub("/([0-9]?)/", "/0\\1/", rev14$date) # ditto
 head(rev14$date, 100)
 rev14$date <- gsub("/14$|/2015|/2016|/2017|/2018", "/2014", rev14$date)
 rev14$date
 
-needReformat <- is.na(as.Date(rev14$date, format = "%m/%d/%Y"))
+needReformat <- is.na(as.Date(rev14$date, format = "%m/%d/%Y")) 
 rev14$date[needReformat]
 rev14$date[needReformat] <- 
-  gsub("^([0-9]{2})/([0-9]{2})", "\\2/\\1", rev14$date[needReformat])
+  gsub("^([0-9]{2})/([0-9]{2})", "\\2/\\1", rev14$date[needReformat]) # swapped
 rev14$date <- as.Date(rev14$date, format = "%m/%d/%Y")
 rev14$date
+# ----------
 
 rev14$purpose
 rev14$purpose[rev14$purpose == "CONSULTANT WORKSHOP"] <-
