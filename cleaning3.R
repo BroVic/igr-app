@@ -178,9 +178,10 @@ colnames(rev15) <- c("date", "payer", "purpose",
 
 rev15$date
 rev15$date <- gsub("^([0-9]?)/", "0\\1/", rev15$date)
+rev15$date <- gsub("2014$|2667$|215$", "2015", rev15$date) # fix bad entries
 needReformat <- is.na(as.Date(rev15$date, format = "%m/%d/%Y"))
 rev15$date[needReformat] <- 
-  gsub("^([0-9]{2})/([0-9]{2})", "\\2/\\1", rev15$date[needReformat])
+  gsub("^([0-9]{2})/([0-9]{2})", "\\2/\\1", rev15$date[needReformat]) # swap
 rev15$date <- as.Date(rev15$date, format = "%m/%d/%Y")
 rev15$date
 
