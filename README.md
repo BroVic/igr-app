@@ -1,4 +1,6 @@
 # igr-app
-Shiny application for some administrative analyses
+R code for analysis of certain administrative data belonging to the National Environmental Standards and Regulations Enforcement Agency, Abuja, Nigeria.
 
-All figures in this plot are imaginary and at best inaccurate. This repository is purely for the purpose of building the app for later input of the correct data.
+
+## Shiny app
+A Shiny app accompanies this repository - code for the app is supplied for guidance only and is found in the igr-app/ directory.
