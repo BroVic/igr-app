@@ -27,7 +27,7 @@ apply(igr.time, 2, anyNA)                         # F == no more NAs
 
 igr.time$month <- as.factor(as.yearmon(igr.time$date))
 aggregate(igr.time, by = list(igr.time$month), sum)
-  read.zoo(igr.time, index.column = "date")
+read.zoo(igr.time, index.column = "date")
 
 
 # igr.time <- aggregate(igr.time, list(igr.time$month), mean) # average
